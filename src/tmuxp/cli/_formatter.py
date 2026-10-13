@@ -72,7 +72,7 @@ class TmuxpHelpFormatter(argparse.RawDescriptionHelpFormatter):
     This formatter extends RawDescriptionHelpFormatter to preserve formatting
     of description text while adding syntax highlighting to example sections.
 
-    The formatter uses a `_theme` attribute (set externally) to apply colors.
+    The formatter uses a `_tmuxp_theme` attribute (set externally) to apply colors.
     If no theme is set, the formatter falls back to plain text output.
 
     Examples
@@ -83,7 +83,7 @@ class TmuxpHelpFormatter(argparse.RawDescriptionHelpFormatter):
     """
 
     # Theme for colorization, set by create_themed_formatter() or externally
-    _theme: HelpTheme | None = None
+    _tmuxp_theme: HelpTheme | None = None
 
     def _fill_text(self, text: str, width: int, indent: str) -> str:
         """Fill text, colorizing examples sections if theme is available.
@@ -110,7 +110,7 @@ class TmuxpHelpFormatter(argparse.RawDescriptionHelpFormatter):
         >>> formatter._fill_text("hello", 80, "")
         'hello'
         """
-        theme = getattr(self, "_theme", None)
+        theme = getattr(self, "_tmuxp_theme", None)
         if not text or theme is None:
             return super()._fill_text(text, width, indent)
 
@@ -368,7 +368,7 @@ def create_themed_formatter(
     >>> colors = Colors(ColorMode.ALWAYS)
     >>> formatter_cls = create_themed_formatter(colors)
     >>> formatter = formatter_cls("test")
-    >>> formatter._theme is not None
+    >>> formatter._tmuxp_theme is not None
     True
 
     With colors disabled:
@@ -376,7 +376,7 @@ def create_themed_formatter(
     >>> colors = Colors(ColorMode.NEVER)
     >>> formatter_cls = create_themed_formatter(colors)
     >>> formatter = formatter_cls("test")
-    >>> formatter._theme is None
+    >>> formatter._tmuxp_theme is None
     True
     """
     # Import here to avoid circular import at module load
@@ -393,6 +393,6 @@ def create_themed_formatter(
 
         def __init__(self, prog: str, **kwargs: t.Any) -> None:
             super().__init__(prog, **kwargs)
-            self._theme = theme
+            self._tmuxp_theme = theme
 
     return ThemedTmuxpHelpFormatter

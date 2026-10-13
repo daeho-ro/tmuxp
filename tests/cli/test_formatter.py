@@ -30,8 +30,8 @@ def test_create_themed_formatter_with_colors_enabled(
     formatter_cls = create_themed_formatter(colors)
     formatter = formatter_cls("test")
 
-    assert formatter._theme is not None
-    assert formatter._theme.prog != ""  # Has color codes
+    assert formatter._tmuxp_theme is not None
+    assert formatter._tmuxp_theme.prog != ""  # Has color codes
 
 
 def test_create_themed_formatter_with_colors_disabled() -> None:
@@ -40,7 +40,7 @@ def test_create_themed_formatter_with_colors_disabled() -> None:
     formatter_cls = create_themed_formatter(colors)
     formatter = formatter_cls("test")
 
-    assert formatter._theme is None
+    assert formatter._tmuxp_theme is None
 
 
 def test_create_themed_formatter_auto_mode_respects_no_color(
@@ -51,7 +51,7 @@ def test_create_themed_formatter_auto_mode_respects_no_color(
     formatter_cls = create_themed_formatter()
     formatter = formatter_cls("test")
 
-    assert formatter._theme is None
+    assert formatter._tmuxp_theme is None
 
 
 def test_create_themed_formatter_auto_mode_respects_force_color(
@@ -63,7 +63,18 @@ def test_create_themed_formatter_auto_mode_respects_force_color(
     formatter_cls = create_themed_formatter()
     formatter = formatter_cls("test")
 
-    assert formatter._theme is not None
+    assert formatter._tmuxp_theme is not None
+
+
+@pytest.mark.parametrize("color_mode", [ColorMode.NEVER, ColorMode.ALWAYS])
+def test_create_themed_formatter_builds_parser(color_mode: ColorMode) -> None:
+    """Parser builds with the themed formatter in every color mode."""
+    parser = argparse.ArgumentParser(
+        prog="tmuxp",
+        formatter_class=create_themed_formatter(Colors(color_mode)),
+    )
+
+    assert "tmuxp" in parser.format_help()
 
 
 def test_fill_text_with_theme_colorizes_examples(
